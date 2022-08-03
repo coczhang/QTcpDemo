@@ -8,6 +8,18 @@
 #include <QTextEdit>
 #include <QTcpSocket>
 
+#define PDU_READY           0
+#define PDU_BUSY            1
+#define PDU_FRAME_REQ       2
+#define PDU_FRAME_DATA      3
+
+typedef struct {
+    int length;
+    int payload_type;
+    char data[0];
+}PduHeader;
+
+
 class TcpClientDemo : public QWidget
 {
     Q_OBJECT
@@ -17,18 +29,22 @@ public:
     ~TcpClientDemo();
 
 private slots:
-    void BtnConnectClicked();
-    void BtnSendClicked();
-    void BtnCloseClicked();
+    void btnConnectClicked();
+    void btnSendClicked();
+    void btnCloseClicked();
 
-    void SocketConnected();
-    void SocketDisconnected();
-    void SocketReadyRead();
+    void socketConnected();
+    void socketDisconnected();
+    void socketReadyRead();
 
 private:
-    void InitClientLayout();
-    void InitClientConnect();
-    QString GetCurrentTime();
+    void initClientLayout();
+    void initClientConnect();
+    void send_req_msg();
+    bool socketWriteData(const char *buffer, int length);
+    void sendDataMsg(QString info);
+
+    QString getCurrentTime();
 
 private:
     QLabel*       m_pLabelIp;
@@ -47,6 +63,7 @@ private:
     QTcpSocket*   m_pTcpSocket;
 
     bool          m_bConnect;
+    QByteArray m_socket_buffer;
 };
 
-#endif // TCPCLIENTDEMO_H
+#endif

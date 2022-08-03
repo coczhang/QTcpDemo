@@ -9,6 +9,17 @@
 
 #define CONNECT_PORT    8888
 
+#define PDU_READY           0
+#define PDU_BUSY            1
+#define PDU_FRAME_REQ       2
+#define PDU_FRAME_DATA      3
+
+typedef struct {
+    int length;
+    int payload_type;
+    char data[0];
+}PduHeader;
+
 class TcpServerDemo : public QWidget
 {
     Q_OBJECT
@@ -18,19 +29,22 @@ public:
     ~TcpServerDemo();
 
 private:
-    void InitClientLayout();
-    void InitClientConnect();
+    void initClientLayout();
+    void initClientConnect();
+    void sendReadyMsg(QTcpSocket *tcpSocket);
+    bool socketWriteData(QTcpSocket *tcpSocket, const char *buffer, int length);
+    void sendDataMsg(QTcpSocket *tcpSocket);
 
-    QString GetCurrentTime();
+    QString getCurrentTime();
 
 private slots:
-    void BtnSendClicked();
-    void BtnCloseClicked();
+    void btnSendClicked();
+    void btnCloseClicked();
 
-    void AcceptSocketConnect();
+    void acceptSocketConnect();
 
-    void SocketDisconnected();
-    void SocketReadyRead();
+    void socketDisconnected();
+    void socketReadyRead();
 
 private:
     QTextEdit*     m_pTextRead;
@@ -41,6 +55,8 @@ private:
 
     QTcpServer*    m_pTcpServer; //监听套接字
     QTcpSocket*    m_pTcpSocket; //通信套接字
+
+    QByteArray m_socket_buffer;
 };
 
-#endif // TCPSERVERDEMO_H
+#endif
